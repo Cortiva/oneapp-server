@@ -12,7 +12,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Configure CORS
-const allowedOrigins = ["http://localhost", "http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost",
+  "http://localhost:3000",
+  "https://oneapp-client-sepia.vercel.app",
+];
 
 const corsOption = {
   origin: function (origin: any, callback: any) {
