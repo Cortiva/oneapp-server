@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "prisma generate",
     "dev": "NODE_ENV=development nodemon src/index.ts",
-    "build": "tsc && cp -r src/generated build/generated && cp -r src/services/views build/",
+    "build": "tsc && cp -r src/generated build/generated && mkdir -p build/services && cp -r src/services/views build/services/",
     "startOld": "node build/index.js",
     "start": "NODE_ENV=production node build/index.js",
     "migrate": "prisma migrate deploy",
