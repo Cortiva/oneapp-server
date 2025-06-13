@@ -1,0 +1,149 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  IT_MANAGER
+}
+
+enum DeviceStatus {
+  AVAILABLE
+  ASSIGNED
+  MAINTENANCE
+}
+
+enum Location {
+  UK
+  IRELAND
+  EU
+  AFRICA
+  AMERICA
+  ASIA
+}
+
+enum EmployeeRole {
+  DEVELOPER
+  DESIGNER
+  SALES
+  MARKETING
+  HUMAN_RESOURCES
+  FINANCE
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+model TokenBlacklist {
+  id        String   @id @default(cuid())
+  token     String   @unique @db.Text()
+  createdAt DateTime @default(now())
+
+  @@map("tokenBlacklists")
+}
+
+model User {
+  id                        String           @id @default(cuid())
+  email                     String           @unique
+  password                  String
+  role                      Role             @default(IT_MANAGER)
+  lastLogin                 DateTime?
+  isActive                  Boolean          @default(true)
+  refreshToken              String?
+  staffId                   String
+  firstName                 String
+  lastName                  String
+  phoneNumber               String
+  officeLocation            String?
+  avatar                    String?          @default("https://res.cloudinary.com/etechds/image/upload/v1749650588/1_koh2sr.png")
+  verificationCode          String?
+  verificationCodeExpiresAt DateTime?
+  accountStatus             AccountStatus    @default(INACTIVE)
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
+  employees                 Employee[]
+  iAssigned                 EmployeeDevice[] @relation("assigned")
+  iRetrieved                EmployeeDevice[] @relation("retrieved")
+
+  @@index([email, firstName, lastName, role])
+  @@map("users")
+}
+
+model Device {
+  id              String           @id @default(cuid())
+  model           String?
+  manufacturer    String?
+  screenSize      String?
+  processor       String?
+  ram             Int
+  storage         String
+  status          DeviceStatus     @default(AVAILABLE)
+  isDeleted       Boolean          @default(false)
+  images          String[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  totalUnits      Int              @default(1)
+  location        Location         @default(UK)
+  employeeDevices EmployeeDevice[]
+
+  @@index([id, model, manufacturer, screenSize, ram, storage])
+  @@map("devices")
+}
+
+model Employee {
+  id             String           @id @default(cuid())
+  staffId        String
+  firstName      String
+  lastName       String
+  email          String           @unique
+  phoneNumber    String
+  officeLocation String
+  role           EmployeeRole?
+  onboardingDate DateTime         @default(now())
+  onboardedById  String
+  onboardedBy    User             @relation(fields: [onboardedById], references: [id], onDelete: Cascade)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  devices        EmployeeDevice[]
+  avatar         String?
+
+  @@index([firstName, lastName, email, phoneNumber, officeLocation, role])
+  @@map("employees")
+}
+
+model EmployeeDevice {
+  id            String    @id @default(cuid())
+  employeeId    String
+  employee      Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  deviceId      String
+  device        Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  assignedOn    DateTime?
+  assignedById  String
+  assignedBy    User      @relation("assigned", fields: [assignedById], references: [id], onDelete: Cascade)
+  retrievedOn   DateTime?
+  retrievedById String?
+  retrievedBy   User?     @relation("retrieved", fields: [retrievedById], references: [id], onDelete: Cascade)
+  remark        String?   @db.Text
+  isRetrieved   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([id, employeeId, deviceId, assignedOn])
+  @@map("employeeDevices")
+}

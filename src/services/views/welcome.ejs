@@ -1,0 +1,16 @@
+<% const title = 'Welcome to ${companyName} App, ${userName}' %>
+<% const content = `
+  <h1>Hello, ${userName}!</h1>
+  <p>Welcome to ${companyName}! We're thrilled to have you join our platform. Get ready to manage your colleague data with ease.</p>
+  <p><strong>Explore Key Features:</strong></p>
+  <ul style="text-align: left; margin: 20px auto; max-width: 400px; list-style: disc; padding-left: 20px;">
+    <li>Device onboarding.</li>
+    <li>Employee device management.</li>
+    <li>And many more.</li>
+  </ul>
+  <p>Please use the following One-Time Password (OTP) to verify your account:</p>
+  <div class="otp-box">${otp}</div>
+  <p>This OTP is valid for 5 minutes. Keep it confidential to ensure your account's security.</p>
+  <p>Need help? Contact our support team at <a href="mailto:${supportEmail}" style="color: #00C6AE;">${supportEmail}</a>.</p>
+` %>
+<%- include('base', { title, content, logoUrl, companyName, companyWebsite, privacyPolicyUrl, contactUrl }) %>

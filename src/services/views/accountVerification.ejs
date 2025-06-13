@@ -1,0 +1,9 @@
+<% const title = 'Account Verification' %>
+<% const content = `
+  <h1>Hello, ${userName}!</h1>
+  <p>You have requested for an account verification, please use the following One-Time Password (OTP) to verify your account:</p>
+  <div class="otp-box">${otp}</div>
+  <p>This OTP is valid for 5 minutes. Keep it confidential to ensure your account's security.</p>
+  <p>Thank you for choosing ${companyName}! We're here to support you every step of the way. Reach out to us at <a href="mailto:${supportEmail}" style="color: #00C6AE;">${supportEmail}</a> if you need assistance.</p>
+` %>
+<%- include('base', { title, content, logoUrl, companyName, companyWebsite, privacyPolicyUrl, contactUrl }) %>
